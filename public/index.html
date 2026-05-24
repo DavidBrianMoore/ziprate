@@ -156,16 +156,6 @@
             <h2 class="section-title">Install ZipRate Instantly</h2>
             <p class="section-subtitle">Choose between persistent automated control or high-portability bookmark utility.</p>
             
-            <!-- Default Speed Customizer (Pre-configured Installers) -->
-            <div class="customizer-card" id="customizer-card">
-                <h3>⚙️ Customise Your Initial Speed</h3>
-                <p>Drag the slider below to set your preferred starting speed. Both the Userscript download and the Bookmarklet code below will adapt instantly before you install!</p>
-                <div class="customizer-control">
-                    <input type="range" id="pref-speed-slider" min="1.0" max="8.0" step="0.5" value="3.0" class="speed-slider-input" aria-label="Default Speed Preference Slider">
-                    <div class="customizer-display" id="pref-speed-display">3.0x</div>
-                </div>
-            </div>
-
             <div class="install-options">
                 <!-- Option A: Userscript -->
                 <div class="install-card recommended">
@@ -180,21 +170,24 @@
                         </div>
                         <div class="step-item">
                             <span class="step-num">2</span>
-                            <span class="step-text">Open a new script inside the manager and copy-paste the contents of <a href="https://github.com/DavidBrianMoore/ziprate/blob/main/ziprate.user.js" target="_blank" rel="noopener">ziprate.user.js</a>.</span>
+                            <span class="step-text">Click your preferred starting speed button below to open the native extension installer instantly.</span>
                         </div>
                         <div class="step-item">
                             <span class="step-num">3</span>
-                            <span class="step-text">Save the file and refresh any media-playing page to enjoy automatic bypass and control.</span>
+                            <span class="step-text">Confirm the installation inside your manager and refresh your tabs!</span>
                         </div>
                     </div>
                     
                     <div style="display: flex; flex-direction: column; gap: 12px; width: 100%;">
-                        <a href="https://github.com/DavidBrianMoore/ziprate/raw/main/ziprate.user.js" class="btn btn-primary" id="btn-install-script">
-                            One-Click Install (Default 3.0x)
+                        <a href="https://github.com/DavidBrianMoore/ziprate/raw/main/ziprate.user.js" class="btn btn-primary" id="install-3x">
+                            🚀 Install 3.0x (Default)
                         </a>
-                        <button class="btn btn-secondary" id="copy-custom-userscript">
-                            Copy Customized Userscript
-                        </button>
+                        <a href="https://github.com/DavidBrianMoore/ziprate/raw/main/ziprate-2x.user.js" class="btn btn-secondary" id="install-2x">
+                            ⚡ Install 2.0x (Preset)
+                        </a>
+                        <a href="https://github.com/DavidBrianMoore/ziprate/raw/main/ziprate-1x.user.js" class="btn btn-secondary" id="install-1x">
+                            🛡️ Install 1.0x (Preset)
+                        </a>
                     </div>
                 </div>
 
@@ -210,17 +203,25 @@
                         </div>
                         <div class="step-item">
                             <span class="step-num">2</span>
-                            <span class="step-text">Click the button below to copy the minified bookmarklet code.</span>
+                            <span class="step-text">Click any preset speed button below to copy the pre-configured bookmarklet code.</span>
                         </div>
                         <div class="step-item">
                             <span class="step-num">3</span>
-                            <span class="step-text">Edit the URL of your new bookmark, paste the copied code, and save! Now click it on any page to trigger speed/stealth overlay.</span>
+                            <span class="step-text">Edit the URL of your new bookmark, paste the copied code, and save! Now click it on any page.</span>
                         </div>
                     </div>
                     
-                    <button class="btn btn-secondary" id="copy-bookmarklet">
-                        Copy Bookmarklet Code
-                    </button>
+                    <div style="display: flex; flex-direction: column; gap: 12px; width: 100%;">
+                        <button class="btn btn-primary" id="copy-bookmarklet-3x">
+                            🚀 Copy 3.0x Bookmarklet
+                        </button>
+                        <button class="btn btn-secondary" id="copy-bookmarklet-2x">
+                            ⚡ Copy 2.0x Bookmarklet
+                        </button>
+                        <button class="btn btn-secondary" id="copy-bookmarklet-1x">
+                            🛡️ Copy 1.0x Bookmarklet
+                        </button>
+                    </div>
                 </div>
             </div>
         </section>

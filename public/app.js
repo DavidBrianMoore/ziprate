@@ -195,69 +195,34 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Speed Preference Customizer Logic
-    const prefSpeedSlider = document.getElementById('pref-speed-slider');
-    const prefSpeedDisplay = document.getElementById('pref-speed-display');
-    const copyUserscriptBtn = document.getElementById('copy-custom-userscript');
-    const copyBookmarkletBtn = document.getElementById('copy-bookmarklet');
+    // Speed Preset Installers & Copy Actions
+    const copyBookmarklet3xBtn = document.getElementById('copy-bookmarklet-3x');
+    const copyBookmarklet2xBtn = document.getElementById('copy-bookmarklet-2x');
+    const copyBookmarklet1xBtn = document.getElementById('copy-bookmarklet-1x');
     const toast = document.getElementById('toast');
 
-    let customizedUserscript = '';
-    let customizedBookmarklet = bookmarkletCode;
+    // Preconfigured Bookmarklet strings
+    const bookmarklet3x = bookmarkletCode;
+    const bookmarklet2x = bookmarkletCode.replace('let currentSpeed=3,', 'let currentSpeed=2,');
+    const bookmarklet1x = bookmarkletCode.replace('let currentSpeed=3,', 'let currentSpeed=1,');
 
-    const updateInstallers = (prefSpeed) => {
-        // 1. Update customized Userscript
-        customizedUserscript = userscriptTemplate.replace('{{DEFAULT_SPEED}}', prefSpeed.toFixed(1));
-        if (copyUserscriptBtn) {
-            copyUserscriptBtn.innerText = `Copy Customized Userscript (${prefSpeed.toFixed(1)}x)`;
+    const setupBookmarkletCopy = (btn, code, label) => {
+        if (btn) {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                navigator.clipboard.writeText(code).then(() => {
+                    showToast(`⚡ ${label} Bookmarklet copied to clipboard!`);
+                }).catch(err => {
+                    console.error('Failed to copy: ', err);
+                    showToast('❌ Copy failed. Please copy manually.');
+                });
+            });
         }
-
-        // 2. Update customized Bookmarklet
-        // Replaces the default `currentSpeed=3` parameter inside the minified block
-        customizedBookmarklet = bookmarkletCode.replace('let currentSpeed=3,', `let currentSpeed=${prefSpeed},`);
     };
 
-    if (prefSpeedSlider && prefSpeedDisplay) {
-        prefSpeedSlider.addEventListener('input', (e) => {
-            const speed = parseFloat(e.target.value);
-            prefSpeedDisplay.innerText = `${speed.toFixed(1)}x`;
-            
-            const isHigh = speed > 4.0;
-            if (isHigh) {
-                prefSpeedDisplay.classList.add('high-speed');
-            } else {
-                prefSpeedDisplay.classList.remove('high-speed');
-            }
-            
-            updateInstallers(speed);
-        });
-    }
-
-    // Userscript Copy Action
-    if (copyUserscriptBtn) {
-        copyUserscriptBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            navigator.clipboard.writeText(customizedUserscript).then(() => {
-                showToast('⚡ Customized Userscript code copied! Create a new script in Tampermonkey and paste it.');
-            }).catch(err => {
-                console.error('Failed to copy: ', err);
-                showToast('❌ Copy failed. Please copy manually.');
-            });
-        });
-    }
-
-    // Bookmarklet Copy Action
-    if (copyBookmarkletBtn) {
-        copyBookmarkletBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            navigator.clipboard.writeText(customizedBookmarklet).then(() => {
-                showToast('⚡ Pre-configured Bookmarklet copied to clipboard!');
-            }).catch(err => {
-                console.error('Failed to copy: ', err);
-                showToast('❌ Copy failed. Please copy manually.');
-            });
-        });
-    }
+    setupBookmarkletCopy(copyBookmarklet3xBtn, bookmarklet3x, '3.0x');
+    setupBookmarkletCopy(copyBookmarklet2xBtn, bookmarklet2x, '2.0x');
+    setupBookmarkletCopy(copyBookmarklet1xBtn, bookmarklet1x, '1.0x');
 
     const showToast = (message) => {
         if (!toast) return;
@@ -270,5 +235,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize display and preconfigured installers
     updatePlaygroundSpeed(1.0);
-    updateInstallers(3.0); // Default to 3.0x preconfiguration
 });
