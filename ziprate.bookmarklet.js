@@ -17,9 +17,36 @@ javascript:(function(){
     const MAX_SPEED = 16.0;
     const MIN_SPEED = 0.1;
 
-    const logSpeed = () => {
-        console.log(`⚡ ZipRate Speed: ${currentSpeed.toFixed(1)}x`);
+    /* 2. UI Setup */
+    const overlay = document.createElement("div");
+    overlay.style.cssText = "position:fixed;top:10px;left:10px;padding:4px 8px;background:rgba(0,0,0,0.9);color:#00ffcc;font-family:sans-serif;font-size:11px;font-weight:bold;border-radius:6px;z-index:2147483647;pointer-events:none;transition:all 0.2s;box-shadow:0 4px 16px rgba(0,0,0,0.6);border:1px solid #00ffcc;backdrop-filter:blur(10px);opacity:0;transform:scale(0.9);";
+    document.body.appendChild(overlay);
+
+    const updateUI = () => {
+        const fsElement = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+        const targetParent = fsElement || document.body;
+        if (overlay.parentElement !== targetParent) {
+            targetParent.appendChild(overlay);
+        }
+
+        overlay.innerText = `🚀 Speed: ${currentSpeed.toFixed(1)}x`;
+        overlay.style.opacity = "1";
+        overlay.style.transform = "scale(1.05)";
+        overlay.style.borderColor = currentSpeed > 4 ? "#ff3366" : "#00ffcc";
+        overlay.style.color = currentSpeed > 4 ? "#ff3366" : "#00ffcc";
+        
+        setTimeout(() => overlay.style.transform = "scale(1)", 100);
+        clearTimeout(window.__speedFadeTimeout);
+        window.__speedFadeTimeout = setTimeout(() => overlay.style.opacity = "0", 2000);
     };
+
+    document.addEventListener('fullscreenchange', () => {
+        const fsElement = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+        const targetParent = fsElement || document.body;
+        if (overlay.parentElement && overlay.parentElement !== targetParent) {
+            targetParent.appendChild(overlay);
+        }
+    });
 
     const applyTo = e => {
         if (e.tagName === "VIDEO" || e.tagName === "AUDIO") {
@@ -60,7 +87,7 @@ javascript:(function(){
             e.preventDefault();
             e.stopImmediatePropagation();
             activeMedia.forEach(m => m.playbackRate = currentSpeed);
-            logSpeed();
+            updateUI();
         }
     };
 

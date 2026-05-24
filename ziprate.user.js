@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         ⚡ ZipRate: Stealth Speed Controller
 // @namespace    http://tampermonkey.net/
-// @version      1.3
-// @description  Persistent speed control and stealth mode (tricks site focus) without intrusive UI.
+// @version      1.4
+// @description  Persistent speed control and stealth mode (tricks site focus) with a safe, temporary fullscreen-compatible HUD.
 // @author       David Brian Moore
 // @match        *://*/*
 // @grant        none
@@ -29,9 +29,40 @@
     const MAX_SPEED = 16.0;
     const MIN_SPEED = 0.1;
 
-    const logSpeed = () => {
-        console.log(`⚡ ZipRate Speed: ${currentSpeed.toFixed(1)}x`);
+    /* 2. UI Setup */
+    const overlay = document.createElement("div");
+    const initUI = () => {
+        overlay.style.cssText = "position:fixed;top:10px;left:10px;padding:4px 8px;background:rgba(0,0,0,0.9);color:#00ffcc;font-family:sans-serif;font-size:11px;font-weight:bold;border-radius:6px;z-index:2147483647;pointer-events:none;transition:all 0.2s;box-shadow:0 4px 16px rgba(0,0,0,0.6);border:1px solid #00ffcc;backdrop-filter:blur(10px);opacity:0;transform:translateY(-10px);";
+        document.body.appendChild(overlay);
     };
+
+    const updateUI = () => {
+        // Ensure the overlay is attached to the current active fullscreen container if in fullscreen
+        const fsElement = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+        const targetParent = fsElement || document.body;
+        if (overlay.parentElement !== targetParent) {
+            targetParent.appendChild(overlay);
+        }
+
+        overlay.innerText = `🚀 Speed: ${currentSpeed.toFixed(1)}x`;
+        overlay.style.opacity = "1";
+        overlay.style.transform = "translateY(0) scale(1.05)";
+        overlay.style.borderColor = currentSpeed > 4 ? "#ff3366" : "#00ffcc";
+        overlay.style.color = currentSpeed > 4 ? "#ff3366" : "#00ffcc";
+        
+        setTimeout(() => overlay.style.transform = "translateY(0) scale(1)", 100);
+        clearTimeout(window.__speedFadeTimeout);
+        window.__speedFadeTimeout = setTimeout(() => overlay.style.opacity = "0", 2000);
+    };
+
+    // Keep overlay appended to correct container when switching fullscreen mode
+    document.addEventListener('fullscreenchange', () => {
+        const fsElement = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+        const targetParent = fsElement || document.body;
+        if (overlay.parentElement && overlay.parentElement !== targetParent) {
+            targetParent.appendChild(overlay);
+        }
+    });
 
     const applyTo = e => {
         if (e.tagName === "VIDEO" || e.tagName === "AUDIO") {
@@ -48,7 +79,7 @@
         root.querySelectorAll("*").forEach(e => { if (e.shadowRoot) scan(e.shadowRoot); });
     };
 
-    /* 2. Keyboard Controls */
+    /* 3. Keyboard Controls */
     window.addEventListener("keydown", e => {
         if (["INPUT", "TEXTAREA"].includes(e.target.tagName) || e.target.isContentEditable) return;
         const key = e.key.toLowerCase();
@@ -61,9 +92,11 @@
         if (changed) {
             e.preventDefault(); e.stopImmediatePropagation();
             activeMedia.forEach(m => m.playbackRate = currentSpeed);
-            logSpeed();
+            updateUI();
         }
     }, true);
+
+    if (document.body) initUI(); else window.addEventListener('DOMContentLoaded', initUI);
 
     new MutationObserver(muts => {
         for (let m of muts) for (let n of m.addedNodes) if (n.nodeType === 1) {
