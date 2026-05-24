@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <title>⚡ ZipRate: The High-Performance Stealth Speed Controller</title>
+    <meta name="description" content="Take back control of your media playback. Speed up to 16x, bypass tab visibility limits with Stealth Mode, and control Shadow DOM videos instantly.">
+    <meta name="keywords" content="userscript, speed control, HTML5 video speed, page visibility bypass, bookmarklet, browser extension">
+    <meta name="author" content="David Brian Moore">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ziprate.web.app/">
+    <meta property="og:title" content="⚡ ZipRate: Stealth Speed Controller">
+    <meta property="og:description" content="Take back control of your media playback. Speed up to 16x, bypass tab visibility limits, and control Shadow DOM videos instantly.">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://ziprate.web.app/">
+    <meta property="twitter:title" content="⚡ ZipRate: Stealth Speed Controller">
+    <meta property="twitter:description" content="Take back control of your media playback. Speed up to 16x, bypass tab visibility limits, and control Shadow DOM videos instantly.">
+
+    <!-- CSS stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Glowing Background Effects -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <!-- Header Section -->
+    <header>
+        <div class="container">
+            <div style="display: flex; width: 100%; justify-content: space-between; align-items: center;">
+                <a href="#" class="logo" id="header-logo">
+                    <span>⚡</span> ZIPRATE
+                </a>
+                <nav class="nav-links" aria-label="Main Navigation">
+                    <a href="#playground-card">Playground</a>
+                    <a href="#features">Features</a>
+                    <a href="#install">Install</a>
+                    <a href="https://github.com/DavidBrianMoore/ziprate" target="_blank" rel="noopener">GitHub</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Section -->
+    <main class="container">
+        
+        <!-- Hero Section -->
+        <section class="hero" id="hero-sec">
+            <div class="badge">
+                <span>🚀</span> Stealth Playback Controller
+            </div>
+            <h1>Take Back Control of Your Web Playback</h1>
+            <p>
+                ZipRate combines high-performance speed tuning up to 16x with a built-in Stealth Mode that convinces websites you are always active and focused on the page. No more auto-pausing or quality drops when you switch tabs.
+            </p>
+            <div class="hero-buttons">
+                <a href="#install" class="btn btn-primary" id="hero-btn-install">
+                    Install Script
+                </a>
+                <a href="#install-bookmarklet" class="btn btn-secondary" id="hero-btn-bookmarklet">
+                    Get Bookmarklet
+                </a>
+            </div>
+        </section>
+
+        <!-- Interactive Playground / Simulator Section -->
+        <section class="playground-section" id="playground-sec">
+            <h2 class="section-title">Test Drive ZipRate Live</h2>
+            <p class="section-subtitle">Focus on the video player below and use keyboard controls to speed up time</p>
+            
+            <div class="playground" id="playground-card">
+                <!-- Video Simulator Area -->
+                <div class="video-container" id="video-wrap">
+                    <!-- Speed HUD (top-left, extremely small font) -->
+                    <div class="mock-overlay" id="mock-overlay">🚀 Speed: 1.0x</div>
+                    <video id="demo-video" controls loop muted playsinline>
+                        <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+                
+                <!-- Controls & Instructions Info -->
+                <div class="playground-controls">
+                    <div class="controls-card">
+                        <h3>⚡ Live Keyboard Hotkeys</h3>
+                        <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 20px;">
+                            Click and focus the video player first, then press:
+                        </p>
+                        <div class="hotkey-list">
+                            <div class="hotkey-item">
+                                <span class="hotkey-label">Cycle Preset Speeds (1x, 2x, 3x, 4x)</span>
+                                <span class="keycap">G</span>
+                            </div>
+                            <div class="hotkey-item">
+                                <span class="hotkey-label">Increase Speed (+0.1)</span>
+                                <span class="keycap">D</span>
+                            </div>
+                            <div class="hotkey-item">
+                                <span class="hotkey-label">Decrease Speed (-0.1)</span>
+                                <span class="keycap">S</span>
+                            </div>
+                        </div>
+
+                        <!-- Real-time Speed Display and Dial -->
+                        <div class="speed-dial">
+                            <div class="speed-bar-container">
+                                <div class="speed-bar" id="speed-bar"></div>
+                            </div>
+                            <div class="speed-text-display" id="speed-text">1.0x</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features-section" id="features">
+            <h2 class="section-title">Designed for Modern Power Users</h2>
+            <p class="section-subtitle">Precision, capability, and performance packaged in a sleek interface.</p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <span class="feature-icon" aria-hidden="true">🔒</span>
+                    <h3>Stealth Mode</h3>
+                    <p>Overrides document Visibility API and Focus hooks. Websites believe you are actively looking at the page, halting auto-pauses and stream throttling when backgrounded.</p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon" aria-hidden="true">🎯</span>
+                    <h3>Smart-Play</h3>
+                    <p>Detects the absolute size of player elements, automatically launching the primary media on interactions while ignoring annoying background ads or tiny hidden media.</p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon" aria-hidden="true">⚙️</span>
+                    <h3>Up to 16x Control</h3>
+                    <p>Fine-tune media rates from 0.1x to 16.0x speed. Bypass default HTML5 limits and site restrictions securely.</p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon" aria-hidden="true">🌀</span>
+                    <h3>Shadow DOM Traversal</h3>
+                    <p>Recursively scans deep into custom components and shadow roots, seizing control of modern embedded media elements that standard extensions miss.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Installation Section -->
+        <section class="install-section" id="install">
+            <h2 class="section-title">Install ZipRate Instantly</h2>
+            <p class="section-subtitle">Choose between persistent automated control or high-portability bookmark utility.</p>
+            
+            <div class="install-options">
+                <!-- Option A: Userscript -->
+                <div class="install-card recommended">
+                    <div class="rec-badge">RECOMMENDED</div>
+                    <h3>Persistent Userscript</h3>
+                    <p class="install-desc">Automated playback and stealth control running directly inside your user profile.</p>
+                    
+                    <div class="steps-list">
+                        <div class="step-item">
+                            <span class="step-num">1</span>
+                            <span class="step-text">Install a Userscript manager like <a href="https://www.tampermonkey.net/" target="_blank" rel="noopener">Tampermonkey</a> or <a href="https://violentmonkey.github.io/" target="_blank" rel="noopener">Violentmonkey</a>.</span>
+                        </div>
+                        <div class="step-item">
+                            <span class="step-num">2</span>
+                            <span class="step-text">Open a new script inside the manager and copy-paste the contents of <a href="https://github.com/DavidBrianMoore/ziprate/blob/main/ziprate.user.js" target="_blank" rel="noopener">ziprate.user.js</a>.</span>
+                        </div>
+                        <div class="step-item">
+                            <span class="step-num">3</span>
+                            <span class="step-text">Save the file and refresh any media-playing page to enjoy automatic bypass and control.</span>
+                        </div>
+                    </div>
+                    
+                    <a href="https://github.com/DavidBrianMoore/ziprate/raw/main/ziprate.user.js" class="btn btn-primary" id="btn-install-script">
+                        Download Userscript
+                    </a>
+                </div>
+
+                <!-- Option B: Bookmarklet -->
+                <div class="install-card" id="install-bookmarklet">
+                    <h3>On-Demand Bookmarklet</h3>
+                    <p class="install-desc">Portable, instant speed and focus controller that requires no extensions.</p>
+                    
+                    <div class="steps-list">
+                        <div class="step-item">
+                            <span class="step-num">1</span>
+                            <span class="step-text">Create a new bookmark in your browser bookmarks bar (e.g. named <code>⚡ ZipRate</code>).</span>
+                        </div>
+                        <div class="step-item">
+                            <span class="step-num">2</span>
+                            <span class="step-text">Click the button below to copy the minified bookmarklet code.</span>
+                        </div>
+                        <div class="step-item">
+                            <span class="step-num">3</span>
+                            <span class="step-text">Edit the URL of your new bookmark, paste the copied code, and save! Now click it on any page to trigger speed/stealth overlay.</span>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-secondary" id="copy-bookmarklet">
+                        Copy Bookmarklet Code
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Success Toast Notification -->
+    <div class="toast" id="toast" role="alert" aria-live="polite">
+        ⚡ Bookmarklet code copied to clipboard!
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>⚡ ZipRate — Created by David Brian Moore</p>
+            <p style="font-size: 12px; color: rgba(255,255,255,0.3);">Licensed under MIT. Free to use and distribute.</p>
+        </div>
+    </footer>
+
+    <!-- JS Logic -->
+    <script src="app.js"></script>
+</body>
+</html>
