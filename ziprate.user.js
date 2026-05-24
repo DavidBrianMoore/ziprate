@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         ⚡ ZipRate: Stealth Speed Controller
 // @namespace    http://tampermonkey.net/
-// @version      1.2
-// @description  Persistent speed control, stealth mode (tricks site focus), and Smart-Play (avoids overlapping audio).
+// @version      1.3
+// @description  Persistent speed control and stealth mode (tricks site focus) without intrusive UI.
 // @author       David Brian Moore
 // @match        *://*/*
 // @grant        none
@@ -12,7 +12,7 @@
 (function() {
     'use strict';
 
-    console.log("⚡ ZipRate: Initializing...");
+    console.log("⚡ ZipRate: Initializing (Stealth Mode Active)...");
 
     /* 1. STEALTH MODE: Keeps site 'convinced' focus is never lost */
     try {
@@ -29,46 +29,14 @@
     const MAX_SPEED = 16.0;
     const MIN_SPEED = 0.1;
 
-    /* 2. UI Setup */
-    const overlay = document.createElement("div");
-    const initUI = () => {
-        overlay.style.cssText = "position:fixed;top:10px;left:10px;padding:4px 8px;background:rgba(0,0,0,0.9);color:#00ffcc;font-family:sans-serif;font-size:11px;font-weight:bold;border-radius:6px;z-index:2147483647;pointer-events:none;transition:all 0.2s;box-shadow:0 4px 16px rgba(0,0,0,0.6);border:1px solid #00ffcc;backdrop-filter:blur(10px);opacity:0;transform:translateY(-10px);";
-        document.body.appendChild(overlay);
-        updateUI();
-    };
-
-    const updateUI = () => {
-        if (!overlay.parentElement) return;
-        overlay.innerText = `🚀 Speed: ${currentSpeed.toFixed(1)}x`;
-        overlay.style.opacity = "1";
-        overlay.style.transform = "translateY(0) scale(1.05)";
-        overlay.style.borderColor = currentSpeed > 4 ? "#ff3366" : "#00ffcc";
-        overlay.style.color = currentSpeed > 4 ? "#ff3366" : "#00ffcc";
-        
-        setTimeout(() => overlay.style.transform = "translateY(0) scale(1)", 100);
-        clearTimeout(window.__speedFadeTimeout);
-        window.__speedFadeTimeout = setTimeout(() => overlay.style.opacity = "0", 2000);
-    };
-
-    /* 3. Smart-Play Logic: Only auto-play the primary content */
-    const getPrimaryMedia = () => {
-        let best = null;
-        let maxArea = -1;
-        activeMedia.forEach(m => {
-            const area = (m.offsetWidth * m.offsetHeight) || 1;
-            if (area > maxArea) {
-                maxArea = area;
-                best = m;
-            }
-        });
-        return best;
+    const logSpeed = () => {
+        console.log(`⚡ ZipRate Speed: ${currentSpeed.toFixed(1)}x`);
     };
 
     const applyTo = e => {
         if (e.tagName === "VIDEO" || e.tagName === "AUDIO") {
             if (!activeMedia.has(e)) {
                 activeMedia.add(e);
-                e.addEventListener("ratechange", () => { if(e.playbackRate !== currentSpeed) e.playbackRate = currentSpeed; });
                 e.addEventListener("play", () => e.playbackRate = currentSpeed);
             }
             e.playbackRate = currentSpeed;
@@ -80,14 +48,7 @@
         root.querySelectorAll("*").forEach(e => { if (e.shadowRoot) scan(e.shadowRoot); });
     };
 
-    /* 4. Activation on first user gesture */
-    window.addEventListener('click', () => {
-        const primary = getPrimaryMedia();
-        if (primary) { try { primary.play(); } catch(e) {} }
-        updateUI();
-    }, { once: true });
-
-    /* 5. Keyboard Controls */
+    /* 2. Keyboard Controls */
     window.addEventListener("keydown", e => {
         if (["INPUT", "TEXTAREA"].includes(e.target.tagName) || e.target.isContentEditable) return;
         const key = e.key.toLowerCase();
@@ -100,11 +61,9 @@
         if (changed) {
             e.preventDefault(); e.stopImmediatePropagation();
             activeMedia.forEach(m => m.playbackRate = currentSpeed);
-            updateUI();
+            logSpeed();
         }
     }, true);
-
-    if (document.body) initUI(); else window.addEventListener('DOMContentLoaded', initUI);
 
     new MutationObserver(muts => {
         for (let m of muts) for (let n of m.addedNodes) if (n.nodeType === 1) {

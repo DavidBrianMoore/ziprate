@@ -1,11 +1,13 @@
 javascript:(function(){
     /* 1. STEALTH MODE */
-    Object.defineProperty(document, 'hidden', { value: false, writable: false });
-    Object.defineProperty(document, 'visibilityState', { value: 'visible', writable: false });
-    document.hasFocus = () => true;
-    const block = e => e.stopImmediatePropagation();
-    window.addEventListener('visibilitychange', block, true);
-    window.addEventListener('blur', block, true);
+    try {
+        Object.defineProperty(document, 'hidden', { value: false, writable: false });
+        Object.defineProperty(document, 'visibilityState', { value: 'visible', writable: false });
+        document.hasFocus = () => true;
+        const block = e => e.stopImmediatePropagation();
+        window.addEventListener('visibilitychange', block, true);
+        window.addEventListener('blur', block, true);
+    } catch(e) { console.log("ZipRate: Stealth Mode Error", e); }
 
     if (window.__speedControllerActive) return;
     window.__speedControllerActive = true;
@@ -15,44 +17,14 @@ javascript:(function(){
     const MAX_SPEED = 16.0;
     const MIN_SPEED = 0.1;
 
-    /* 2. PREMIUM UI */
-    const overlay = document.createElement("div");
-    overlay.style.cssText = "position:fixed;top:10px;left:10px;padding:4px 8px;background:rgba(0,0,0,0.9);color:#00ffcc;font-family:sans-serif;font-size:11px;font-weight:bold;border-radius:6px;z-index:2147483647;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 16px rgba(0,0,0,0.6);border:1px solid #00ffcc;backdrop-filter:blur(10px);";
-    overlay.innerText = `🚀 Speed: 3.0x (Click to Play & Focus)`;
-    document.body.appendChild(overlay);
-
-    /* Grabs focus AND starts playback on click */
-    overlay.onclick = () => {
-        window.focus();
-        document.body.focus();
-        overlay.style.pointerEvents = "none";
-        overlay.style.cursor = "default";
-        
-        /* AUTOMATIC PLAYBACK */
-        activeMedia.forEach(m => {
-            try { m.play(); } catch(e) { console.log("Playback failed:", e); }
-        });
-        
-        updateUI();
-    };
-
-    const updateUI = () => {
-        overlay.innerText = `🚀 Speed: ${currentSpeed.toFixed(1)}x`;
-        overlay.style.opacity = "1";
-        overlay.style.transform = "scale(1.05)";
-        overlay.style.borderColor = currentSpeed > 4 ? "#ff3366" : "#00ffcc";
-        overlay.style.color = currentSpeed > 4 ? "#ff3366" : "#00ffcc";
-        
-        setTimeout(() => overlay.style.transform = "scale(1)", 100);
-        clearTimeout(window.__speedFadeTimeout);
-        window.__speedFadeTimeout = setTimeout(() => overlay.style.opacity = "0", 2000);
+    const logSpeed = () => {
+        console.log(`⚡ ZipRate Speed: ${currentSpeed.toFixed(1)}x`);
     };
 
     const applyTo = e => {
         if (e.tagName === "VIDEO" || e.tagName === "AUDIO") {
             if (!activeMedia.has(e)) {
                 activeMedia.add(e);
-                e.addEventListener("ratechange", () => { if (e.playbackRate !== currentSpeed) e.playbackRate = currentSpeed; });
                 e.addEventListener("play", () => e.playbackRate = currentSpeed);
             }
             e.playbackRate = currentSpeed;
@@ -88,7 +60,7 @@ javascript:(function(){
             e.preventDefault();
             e.stopImmediatePropagation();
             activeMedia.forEach(m => m.playbackRate = currentSpeed);
-            updateUI();
+            logSpeed();
         }
     };
 
