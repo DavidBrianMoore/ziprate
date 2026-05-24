@@ -73,7 +73,7 @@ javascript:(function(){
         if (key === "g") {
             currentSpeed = currentSpeed < 2 ? 2 : currentSpeed < 3 ? 3 : currentSpeed < 4 ? 4 : 1;
             changed = true;
-        } else if (key === "f") {
+        } else if (key === "a") {
             currentSpeed = currentSpeed > 3 ? 3 : currentSpeed > 2 ? 2 : currentSpeed > 1 ? 1 : 4;
             changed = true;
         } else if (key === "d") {
