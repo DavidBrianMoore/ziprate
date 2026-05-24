@@ -593,3 +593,78 @@ footer p {
         text-shadow: 0 0 20px rgba(0, 255, 204, 0.6);
     }
 }
+
+/* Customizer Card */
+.customizer-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    padding: 32px;
+    margin-bottom: 40px;
+    text-align: center;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.customizer-card h3 {
+    font-family: var(--font-outfit);
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 8px;
+}
+
+.customizer-card p {
+    color: var(--text-secondary);
+    font-size: 14px;
+    max-width: 600px;
+    margin: 0 auto 24px auto;
+}
+
+.customizer-control {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.speed-slider-input {
+    flex-grow: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 8px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.1);
+    outline: none;
+    cursor: pointer;
+}
+
+.speed-slider-input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--primary-neon);
+    box-shadow: 0 0 10px var(--primary-neon);
+    transition: transform 0.1s;
+}
+
+.speed-slider-input::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
+
+.customizer-display {
+    font-family: var(--font-outfit);
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--primary-neon);
+    min-width: 80px;
+    text-align: left;
+    transition: color 0.2s;
+}
+
+.customizer-display.high-speed {
+    color: var(--secondary-neon);
+}

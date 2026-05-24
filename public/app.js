@@ -1,5 +1,86 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Bookmarklet code string template
     const bookmarkletCode = `javascript:(function(){try{Object.defineProperty(document,'hidden',{value:false,writable:false});Object.defineProperty(document,'visibilityState',{value:'visible',writable:false});document.hasFocus=()=>true;const block=e=>e.stopImmediatePropagation();window.addEventListener('visibilitychange',block,true);window.addEventListener('blur',block,true)}catch(e){console.log("ZipRate: Stealth Mode Error",e)}if(window.__speedControllerActive)return;window.__speedControllerActive=true;let currentSpeed=3,activeMedia=new Set;const MAX_SPEED=16,MIN_SPEED=0.1;const logSpeed=()=>{console.log(\`⚡ ZipRate Speed: \${currentSpeed.toFixed(1)}x\`)};const applyTo=e=>{if(e.tagName==="VIDEO"||e.tagName==="AUDIO"){if(!activeMedia.has(e)){activeMedia.add(e);e.addEventListener("play",()=>e.playbackRate=currentSpeed)}e.playbackRate=currentSpeed}};const scan=(root=document)=>{root.querySelectorAll("video, audio").forEach(applyTo);root.querySelectorAll("*").forEach(e=>{if(e.shadowRoot)scan(e.shadowRoot)})};const handleKey=e=>{if(["INPUT","TEXTAREA"].includes(e.target.tagName)||e.target.isContentEditable)return;const key=e.key.toLowerCase();let changed=false;if(key==="g"){currentSpeed=currentSpeed<2?2:currentSpeed<3?3:currentSpeed<4?4:1;changed=true}else if(key==="a"){currentSpeed=currentSpeed>3?3:currentSpeed>2?2:currentSpeed>1?1:4;changed=true}else if(key==="d"){currentSpeed=Math.min(MAX_SPEED,currentSpeed+0.1);changed=true}else if(key==="s"){currentSpeed=Math.max(MIN_SPEED,currentSpeed-0.1);changed=true}if(changed){e.preventDefault();e.stopImmediatePropagation();activeMedia.forEach(m=>m.playbackRate=currentSpeed);logSpeed()}};window.addEventListener("keydown",handleKey,true);new MutationObserver(muts=>{for(let m of muts)for(let n of m.addedNodes)if(n.nodeType===1){if(n.tagName==="VIDEO"||n.tagName==="AUDIO")applyTo(n);else scan(n)}}).observe(document.documentElement,{childList:true,subtree:true});scan();setInterval(()=>{activeMedia.forEach(m=>{if(m.playbackRate!==currentSpeed)m.playbackRate=currentSpeed})},400)})()`;
+
+    // Userscript code string template
+    const userscriptTemplate = `// ==UserScript==
+// @name         ⚡ ZipRate: Stealth Speed Controller
+// @namespace    http://tampermonkey.net/
+// @version      1.3
+// @description  Persistent speed control and stealth mode (tricks site focus) without intrusive UI.
+// @author       David Brian Moore
+// @match        *://*/*
+// @grant        none
+// @run-at       document-idle
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    console.log("⚡ ZipRate: Initializing (Stealth Mode Active)...");
+
+    /* 1. STEALTH MODE: Keeps site 'convinced' focus is never lost */
+    try {
+        Object.defineProperty(document, 'hidden', { value: false, writable: false });
+        Object.defineProperty(document, 'visibilityState', { value: 'visible', writable: false });
+        document.hasFocus = () => true;
+        const block = e => e.stopImmediatePropagation();
+        window.addEventListener('visibilitychange', block, true);
+        window.addEventListener('blur', block, true);
+    } catch(e) { console.log("ZipRate: Stealth Mode Error", e); }
+
+    let currentSpeed = {{DEFAULT_SPEED}};
+    let activeMedia = new Set();
+    const MAX_SPEED = 16.0;
+    const MIN_SPEED = 0.1;
+
+    const logSpeed = () => {
+        console.log(\`⚡ ZipRate Speed: \${currentSpeed.toFixed(1)}x\`);
+    };
+
+    const applyTo = e => {
+        if (e.tagName === "VIDEO" || e.tagName === "AUDIO") {
+            if (!activeMedia.has(e)) {
+                activeMedia.add(e);
+                e.addEventListener("play", () => e.playbackRate = currentSpeed);
+            }
+            e.playbackRate = currentSpeed;
+        }
+    };
+
+    const scan = (root = document) => {
+        root.querySelectorAll("video, audio").forEach(applyTo);
+        root.querySelectorAll("*").forEach(e => { if (e.shadowRoot) scan(e.shadowRoot); });
+    };
+
+    /* 2. Keyboard Controls */
+    window.addEventListener("keydown", e => {
+        if (["INPUT", "TEXTAREA"].includes(e.target.tagName) || e.target.isContentEditable) return;
+        const key = e.key.toLowerCase();
+        let changed = false;
+        if (key === "g") { currentSpeed = currentSpeed < 2 ? 2 : currentSpeed < 3 ? 3 : currentSpeed < 4 ? 4 : 1; changed = true; }
+        else if (key === "a") { currentSpeed = currentSpeed > 3 ? 3 : currentSpeed > 2 ? 2 : currentSpeed > 1 ? 1 : 4; changed = true; }
+        else if (key === "d") { currentSpeed = Math.min(MAX_SPEED, currentSpeed + 0.1); changed = true; }
+        else if (key === "s") { currentSpeed = Math.max(MIN_SPEED, currentSpeed - 0.1); changed = true; }
+        
+        if (changed) {
+            e.preventDefault(); e.stopImmediatePropagation();
+            activeMedia.forEach(m => m.playbackRate = currentSpeed);
+            logSpeed();
+        }
+    }, true);
+
+    new MutationObserver(muts => {
+        for (let m of muts) for (let n of m.addedNodes) if (n.nodeType === 1) {
+            if (n.tagName === "VIDEO" || n.tagName === "AUDIO") applyTo(n); else scan(n);
+        }
+    }).observe(document.documentElement, { childList: true, subtree: true });
+
+    setInterval(() => {
+        scan();
+        activeMedia.forEach(m => { if (m.playbackRate !== currentSpeed) m.playbackRate = currentSpeed; });
+    }, 1000);
+})();`;
 
     // Interactive Playground / Simulator Setup
     const video = document.getElementById('demo-video');
@@ -7,23 +88,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const speedBar = document.getElementById('speed-bar');
     const speedText = document.getElementById('speed-text');
     
-    let currentSpeed = 1.0;
-    const MAX_SPEED = 16.0;
-    const MIN_SPEED = 0.1;
+    let playgroundSpeed = 1.0;
+    const PLAYGROUND_MAX_SPEED = 16.0;
+    const PLAYGROUND_MIN_SPEED = 0.1;
     let fadeTimeout = null;
 
     // Synchronize video elements and slider displays
     const updatePlaygroundSpeed = (speed) => {
-        currentSpeed = parseFloat(speed);
+        playgroundSpeed = parseFloat(speed);
         if (video) {
-            video.playbackRate = currentSpeed;
+            video.playbackRate = playgroundSpeed;
         }
 
         // Update display text and colors
-        speedText.innerText = `${currentSpeed.toFixed(1)}x`;
-        mockOverlay.innerText = `🚀 Speed: ${currentSpeed.toFixed(1)}x`;
+        speedText.innerText = `${playgroundSpeed.toFixed(1)}x`;
+        mockOverlay.innerText = `🚀 Speed: ${playgroundSpeed.toFixed(1)}x`;
         
-        const isHigh = currentSpeed > 4.0;
+        const isHigh = playgroundSpeed > 4.0;
         const color = isHigh ? '#ff3366' : '#00ffcc';
         
         speedText.style.color = color;
@@ -36,11 +117,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Calculate progress percentage for speed bar
-        // Scale 0.1x to 16x as 0% to 100%
-        const percent = ((currentSpeed - MIN_SPEED) / (MAX_SPEED - MIN_SPEED)) * 100;
+        const percent = ((playgroundSpeed - PLAYGROUND_MIN_SPEED) / (PLAYGROUND_MAX_SPEED - PLAYGROUND_MIN_SPEED)) * 100;
         speedBar.style.width = `${percent}%`;
 
-        // Pulse mock speed overlay (matches top-left display behavior!)
+        // Pulse mock speed overlay
         mockOverlay.classList.add('visible');
         mockOverlay.style.transform = 'scale(1.05)';
         
@@ -51,31 +131,28 @@ document.addEventListener('DOMContentLoaded', () => {
         clearTimeout(fadeTimeout);
         fadeTimeout = setTimeout(() => {
             mockOverlay.classList.remove('visible');
-        }, 2000); // Fades out exactly after 2 seconds
+        }, 2000);
     };
 
     // Listen to mock video playground focus and keyboard shortcuts
-    const playgroundContainer = document.getElementById('playground-card');
-    
     window.addEventListener('keydown', (e) => {
-        // Only trigger if focus isn't in forms or inputs
         if (["INPUT", "TEXTAREA"].includes(e.target.tagName) || e.target.isContentEditable) return;
         
         const key = e.key.toLowerCase();
         let changed = false;
-        let newSpeed = currentSpeed;
+        let newSpeed = playgroundSpeed;
 
         if (key === 'g') {
-            newSpeed = currentSpeed < 2 ? 2 : currentSpeed < 3 ? 3 : currentSpeed < 4 ? 4 : 1;
+            newSpeed = playgroundSpeed < 2 ? 2 : playgroundSpeed < 3 ? 3 : playgroundSpeed < 4 ? 4 : 1;
             changed = true;
         } else if (key === 'a') {
-            newSpeed = currentSpeed > 3 ? 3 : currentSpeed > 2 ? 2 : currentSpeed > 1 ? 1 : 4;
+            newSpeed = playgroundSpeed > 3 ? 3 : playgroundSpeed > 2 ? 2 : playgroundSpeed > 1 ? 1 : 4;
             changed = true;
         } else if (key === 'd') {
-            newSpeed = Math.min(MAX_SPEED, currentSpeed + 0.1);
+            newSpeed = Math.min(PLAYGROUND_MAX_SPEED, playgroundSpeed + 0.1);
             changed = true;
         } else if (key === 's') {
-            newSpeed = Math.max(MIN_SPEED, currentSpeed - 0.1);
+            newSpeed = Math.max(PLAYGROUND_MIN_SPEED, playgroundSpeed - 0.1);
             changed = true;
         }
 
@@ -85,15 +162,58 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Bookmarklet Copy Action
+    // Speed Preference Customizer Logic
+    const prefSpeedSlider = document.getElementById('pref-speed-slider');
+    const prefSpeedDisplay = document.getElementById('pref-speed-display');
+    const downloadBtn = document.getElementById('btn-install-script');
     const copyBtn = document.getElementById('copy-bookmarklet');
     const toast = document.getElementById('toast');
 
+    let downloadUrl = null;
+    let customizedBookmarklet = bookmarkletCode;
+
+    const updateInstallers = (prefSpeed) => {
+        // 1. Update customized Userscript
+        const customizedUserscript = userscriptTemplate.replace('{{DEFAULT_SPEED}}', prefSpeed.toFixed(1));
+        const blob = new Blob([customizedUserscript], { type: 'text/javascript' });
+        
+        if (downloadUrl) {
+            URL.revokeObjectURL(downloadUrl);
+        }
+        
+        downloadUrl = URL.createObjectURL(blob);
+        if (downloadBtn) {
+            downloadBtn.href = downloadUrl;
+            downloadBtn.download = 'ziprate.user.js';
+        }
+
+        // 2. Update customized Bookmarklet
+        // Replaces the default `currentSpeed=3` parameter inside the minified block
+        customizedBookmarklet = bookmarkletCode.replace('let currentSpeed=3,', `let currentSpeed=${prefSpeed},`);
+    };
+
+    if (prefSpeedSlider && prefSpeedDisplay) {
+        prefSpeedSlider.addEventListener('input', (e) => {
+            const speed = parseFloat(e.target.value);
+            prefSpeedDisplay.innerText = `${speed.toFixed(1)}x`;
+            
+            const isHigh = speed > 4.0;
+            if (isHigh) {
+                prefSpeedDisplay.classList.add('high-speed');
+            } else {
+                prefSpeedDisplay.classList.remove('high-speed');
+            }
+            
+            updateInstallers(speed);
+        });
+    }
+
+    // Bookmarklet Copy Action
     if (copyBtn) {
         copyBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            navigator.clipboard.writeText(bookmarkletCode).then(() => {
-                showToast('⚡ Bookmarklet code copied to clipboard!');
+            navigator.clipboard.writeText(customizedBookmarklet).then(() => {
+                showToast('⚡ Pre-configured Bookmarklet copied to clipboard!');
             }).catch(err => {
                 console.error('Failed to copy: ', err);
                 showToast('❌ Copy failed. Please copy manually.');
@@ -110,6 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 3000);
     };
 
-    // Initialize display
+    // Initialize display and preconfigured installers
     updatePlaygroundSpeed(1.0);
+    updateInstallers(3.0); // Default to 3.0x preconfiguration
 });
