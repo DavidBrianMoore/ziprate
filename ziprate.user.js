@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         🚀 PhantomRate: Stealth Speed Controller
+// @name         ⚡ ZipRate: Stealth Speed Controller
 // @namespace    http://tampermonkey.net/
 // @version      1.2
 // @description  Persistent speed control, stealth mode (tricks site focus), and Smart-Play (avoids overlapping audio).
@@ -12,7 +12,7 @@
 (function() {
     'use strict';
 
-    console.log("🚀 PhantomRate: Initializing...");
+    console.log("⚡ ZipRate: Initializing...");
 
     /* 1. STEALTH MODE: Keeps site 'convinced' focus is never lost */
     try {
@@ -22,7 +22,7 @@
         const block = e => e.stopImmediatePropagation();
         window.addEventListener('visibilitychange', block, true);
         window.addEventListener('blur', block, true);
-    } catch(e) { console.log("PhantomRate: Stealth Mode Error", e); }
+    } catch(e) { console.log("ZipRate: Stealth Mode Error", e); }
 
     let currentSpeed = 3.0;
     let activeMedia = new Set();
@@ -32,7 +32,7 @@
     /* 2. UI Setup */
     const overlay = document.createElement("div");
     const initUI = () => {
-        overlay.style.cssText = "position:fixed;top:20px;right:20px;padding:10px 20px;background:rgba(0,0,0,0.9);color:#00ffcc;font-family:sans-serif;font-size:18px;font-weight:bold;border-radius:12px;z-index:2147483647;pointer-events:none;transition:all 0.2s;box-shadow:0 8px 32px rgba(0,0,0,0.6);border:2px solid #00ffcc;backdrop-filter:blur(10px);opacity:0;transform:translateY(-20px);";
+        overlay.style.cssText = "position:fixed;top:10px;left:10px;padding:4px 8px;background:rgba(0,0,0,0.9);color:#00ffcc;font-family:sans-serif;font-size:11px;font-weight:bold;border-radius:6px;z-index:2147483647;pointer-events:none;transition:all 0.2s;box-shadow:0 4px 16px rgba(0,0,0,0.6);border:1px solid #00ffcc;backdrop-filter:blur(10px);opacity:0;transform:translateY(-10px);";
         document.body.appendChild(overlay);
         updateUI();
     };
@@ -41,13 +41,13 @@
         if (!overlay.parentElement) return;
         overlay.innerText = `🚀 Speed: ${currentSpeed.toFixed(1)}x`;
         overlay.style.opacity = "1";
-        overlay.style.transform = "translateY(0) scale(1.1)";
+        overlay.style.transform = "translateY(0) scale(1.05)";
         overlay.style.borderColor = currentSpeed > 4 ? "#ff3366" : "#00ffcc";
         overlay.style.color = currentSpeed > 4 ? "#ff3366" : "#00ffcc";
         
         setTimeout(() => overlay.style.transform = "translateY(0) scale(1)", 100);
         clearTimeout(window.__speedFadeTimeout);
-        window.__speedFadeTimeout = setTimeout(() => overlay.style.opacity = "0.3", 3000);
+        window.__speedFadeTimeout = setTimeout(() => overlay.style.opacity = "0", 2000);
     };
 
     /* 3. Smart-Play Logic: Only auto-play the primary content */
