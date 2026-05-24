@@ -188,9 +188,14 @@
                         </div>
                     </div>
                     
-                    <a href="https://github.com/DavidBrianMoore/ziprate/raw/main/ziprate.user.js" class="btn btn-primary" id="btn-install-script">
-                        Download Userscript
-                    </a>
+                    <div style="display: flex; flex-direction: column; gap: 12px; width: 100%;">
+                        <a href="https://github.com/DavidBrianMoore/ziprate/raw/main/ziprate.user.js" class="btn btn-primary" id="btn-install-script">
+                            One-Click Install (Default 3.0x)
+                        </a>
+                        <button class="btn btn-secondary" id="copy-custom-userscript">
+                            Copy Customized Userscript
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Option B: Bookmarklet -->
@@ -236,6 +241,6 @@
     </footer>
 
     <!-- JS Logic -->
-    <script src="app.js?v=1.2"></script>
+    <script src="app.js?v=1.3"></script>
 </body>
 </html>

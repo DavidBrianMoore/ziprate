@@ -198,26 +198,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // Speed Preference Customizer Logic
     const prefSpeedSlider = document.getElementById('pref-speed-slider');
     const prefSpeedDisplay = document.getElementById('pref-speed-display');
-    const downloadBtn = document.getElementById('btn-install-script');
-    const copyBtn = document.getElementById('copy-bookmarklet');
+    const copyUserscriptBtn = document.getElementById('copy-custom-userscript');
+    const copyBookmarkletBtn = document.getElementById('copy-bookmarklet');
     const toast = document.getElementById('toast');
 
-    let downloadUrl = null;
+    let customizedUserscript = '';
     let customizedBookmarklet = bookmarkletCode;
 
     const updateInstallers = (prefSpeed) => {
         // 1. Update customized Userscript
-        const customizedUserscript = userscriptTemplate.replace('{{DEFAULT_SPEED}}', prefSpeed.toFixed(1));
-        const blob = new Blob([customizedUserscript], { type: 'text/javascript' });
-        
-        if (downloadUrl) {
-            URL.revokeObjectURL(downloadUrl);
-        }
-        
-        downloadUrl = URL.createObjectURL(blob);
-        if (downloadBtn) {
-            downloadBtn.href = downloadUrl;
-            downloadBtn.download = 'ziprate.user.js';
+        customizedUserscript = userscriptTemplate.replace('{{DEFAULT_SPEED}}', prefSpeed.toFixed(1));
+        if (copyUserscriptBtn) {
+            copyUserscriptBtn.innerText = `Copy Customized Userscript (${prefSpeed.toFixed(1)}x)`;
         }
 
         // 2. Update customized Bookmarklet
@@ -241,9 +233,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Userscript Copy Action
+    if (copyUserscriptBtn) {
+        copyUserscriptBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            navigator.clipboard.writeText(customizedUserscript).then(() => {
+                showToast('⚡ Customized Userscript code copied! Create a new script in Tampermonkey and paste it.');
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                showToast('❌ Copy failed. Please copy manually.');
+            });
+        });
+    }
+
     // Bookmarklet Copy Action
-    if (copyBtn) {
-        copyBtn.addEventListener('click', (e) => {
+    if (copyBookmarkletBtn) {
+        copyBookmarkletBtn.addEventListener('click', (e) => {
             e.preventDefault();
             navigator.clipboard.writeText(customizedBookmarklet).then(() => {
                 showToast('⚡ Pre-configured Bookmarklet copied to clipboard!');
