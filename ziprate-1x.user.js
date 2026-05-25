@@ -80,6 +80,17 @@
     /* 3. Keyboard Controls */
     window.addEventListener("keydown", e => {
         if (["INPUT", "TEXTAREA"].includes(e.target.tagName) || e.target.isContentEditable) return;
+        
+        // Restrict hot keys to be active only when a video/audio is actively being played
+        let hasPlayingMedia = false;
+        for (const m of activeMedia) {
+            if (m.isConnected && !m.paused && !m.ended) {
+                hasPlayingMedia = true;
+                break;
+            }
+        }
+        if (!hasPlayingMedia) return;
+
         const key = e.key.toLowerCase();
         let changed = false;
         if (key === "g") { currentSpeed = currentSpeed < 2 ? 2 : currentSpeed < 3 ? 3 : currentSpeed < 4 ? 4 : 1; changed = true; }
@@ -89,7 +100,9 @@
         
         if (changed) {
             e.preventDefault(); e.stopImmediatePropagation();
-            activeMedia.forEach(m => m.playbackRate = currentSpeed);
+            activeMedia.forEach(m => {
+                if (m.isConnected) m.playbackRate = currentSpeed;
+            });
             updateUI();
         }
     }, true);
@@ -104,6 +117,12 @@
 
     setInterval(() => {
         scan();
+        // Clean up disconnected media elements
+        activeMedia.forEach(m => {
+            if (!m.isConnected) {
+                activeMedia.delete(m);
+            }
+        });
         activeMedia.forEach(m => { if (m.playbackRate !== currentSpeed) m.playbackRate = currentSpeed; });
     }, 1000);
 })();

@@ -66,6 +66,16 @@ javascript:(function(){
     const handleKey = e => {
         if (["INPUT", "TEXTAREA"].includes(e.target.tagName) || e.target.isContentEditable) return;
         
+        // Restrict hot keys to be active only when a video/audio is actively being played
+        let hasPlayingMedia = false;
+        for (const m of activeMedia) {
+            if (m.isConnected && !m.paused && !m.ended) {
+                hasPlayingMedia = true;
+                break;
+            }
+        }
+        if (!hasPlayingMedia) return;
+        
         const key = e.key.toLowerCase();
         let changed = false;
         
@@ -86,7 +96,9 @@ javascript:(function(){
         if (changed) {
             e.preventDefault();
             e.stopImmediatePropagation();
-            activeMedia.forEach(m => m.playbackRate = currentSpeed);
+            activeMedia.forEach(m => {
+                if (m.isConnected) m.playbackRate = currentSpeed;
+            });
             updateUI();
         }
     };
@@ -107,6 +119,12 @@ javascript:(function(){
     scan();
 
     setInterval(() => {
+        // Clean up disconnected media elements
+        activeMedia.forEach(m => {
+            if (!m.isConnected) {
+                activeMedia.delete(m);
+            }
+        });
         activeMedia.forEach(m => { if (m.playbackRate !== currentSpeed) m.playbackRate = currentSpeed; });
     }, 400);
 })();
