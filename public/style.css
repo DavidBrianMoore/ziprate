@@ -1,9 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap');
 
 :root {
+    color-scheme: dark;
     --bg-dark: #07090e;
-    --bg-card: rgba(255, 255, 255, 0.03);
-    --bg-card-hover: rgba(255, 255, 255, 0.06);
+    --bg-card: #0e1015;
+    --bg-card-hover: #16181c;
     --border-color: rgba(255, 255, 255, 0.08);
     --primary-neon: #00ffcc;
     --secondary-neon: #ff3366;
@@ -18,6 +19,11 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+}
+
+html {
+    background-color: #07090e;
+    color-scheme: dark;
 }
 
 body {
