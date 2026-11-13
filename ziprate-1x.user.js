@@ -107,6 +107,27 @@
         }
     }, true);
 
+    /* 6. ATA Integration */
+    window.__ATA__ = {
+        version: '1.0.0',
+        app: { name: 'PhantomRate', version: '1.2' },
+        getState: () => ({
+            currentSpeed,
+            activeMediaCount: activeMedia.size,
+            isStealthActive: document.visibilityState === 'visible' && document.hasFocus()
+        }),
+        actions: {
+            setSpeed: (speed) => {
+                currentSpeed = Math.max(MIN_SPEED, Math.min(MAX_SPEED, speed));
+                activeMedia.forEach(m => m.playbackRate = currentSpeed);
+                updateUI();
+            },
+            scan: () => scan(),
+            getPrimary: () => getPrimaryMedia()
+        }
+    };
+    console.log("🚀 [ATA] PhantomRate Testing API Initialized");
+
     if (document.body) initUI(); else window.addEventListener('DOMContentLoaded', initUI);
 
     new MutationObserver(muts => {
